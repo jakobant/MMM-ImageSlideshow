@@ -72,6 +72,21 @@ Module.register("MMM-ImageSlideshow", {
 			this.interval = null;
         }
 	},
+	notificationReceived: function (notification, payload, sender) {
+		if (notification === "MMM-IMAGE-RELOAD") {
+		    console.log("Reload Playlist:", notification, "payload: ", payload);
+		    // create an empty image list
+            this.imageList = [];
+            // set beginning image index to -1, as it will auto increment on start
+            this.imageIndex = -1;
+            // ask helper function to get the image list
+            this.sendSocketNotification('IMAGESLIDESHOW_REGISTER_CONFIG', this.config);
+			// do one update time to clear the html
+			this.updateDom();
+			// set a blank timer
+			this.interval = null;
+		}
+    },
 	// Define required scripts.
 	getStyles: function() {
         // the css contains the make grayscale code
@@ -79,6 +94,7 @@ Module.register("MMM-ImageSlideshow", {
 	},    
 	// the socket handler
 	socketNotificationReceived: function(notification, payload) {
+	    console.log(notification, payload)
 		// if an update was received
 		if (notification === "IMAGESLIDESHOW_FILELIST") {
 			// check this is for this module based on the woeid
@@ -86,6 +102,7 @@ Module.register("MMM-ImageSlideshow", {
 			{
 				// set the image list
 				this.imageList = payload.imageList;
+				console.log(this.imageList)
                 // if image list actually contains images
                 // set loaded flag to true and update dom
                 if (this.imageList.length > 0) {
